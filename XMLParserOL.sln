@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLParserOL", "XMLParserOL.csproj", "{7325545E-1E70-48EC-8031-424637CB269E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XMLParserOL", "XMLParserOL.csproj", "{7325545E-1E70-48EC-8031-424637CB269E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLParserOL UI", "..\XMLParserOL UI\XMLParserOL UI.csproj", "{7A6977D3-12C6-428E-979C-48B9772D544A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7325545E-1E70-48EC-8031-424637CB269E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7325545E-1E70-48EC-8031-424637CB269E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7325545E-1E70-48EC-8031-424637CB269E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A6977D3-12C6-428E-979C-48B9772D544A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A6977D3-12C6-428E-979C-48B9772D544A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A6977D3-12C6-428E-979C-48B9772D544A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A6977D3-12C6-428E-979C-48B9772D544A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
