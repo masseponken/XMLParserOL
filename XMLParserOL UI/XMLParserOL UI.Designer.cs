@@ -30,17 +30,16 @@
         {
             OpenXMLFile = new Button();
             XMLFile = new TextBox();
-            Parse = new Button();
             Errortext = new Label();
-            ccbCountry = new CheckComboBox.CheckedComboBox();
-            label1 = new Label();
             label2 = new Label();
             ccbClub = new CheckComboBox.CheckedComboBox();
+            label1 = new Label();
+            SaveXMLFile = new Button();
             SuspendLayout();
             // 
             // OpenXMLFile
             // 
-            OpenXMLFile.Location = new Point(348, 23);
+            OpenXMLFile.Location = new Point(317, 20);
             OpenXMLFile.Name = "OpenXMLFile";
             OpenXMLFile.Size = new Size(108, 23);
             OpenXMLFile.TabIndex = 0;
@@ -50,59 +49,29 @@
             // 
             // XMLFile
             // 
-            XMLFile.Location = new Point(15, 24);
+            XMLFile.Location = new Point(94, 20);
             XMLFile.Name = "XMLFile";
-            XMLFile.Size = new Size(327, 23);
+            XMLFile.Size = new Size(207, 23);
             XMLFile.TabIndex = 1;
-            // 
-            // Parse
-            // 
-            Parse.Location = new Point(462, 24);
-            Parse.Name = "Parse";
-            Parse.Size = new Size(108, 23);
-            Parse.TabIndex = 2;
-            Parse.Text = "Parse";
-            Parse.UseVisualStyleBackColor = true;
-            Parse.Click += Parse_Click;
             // 
             // Errortext
             // 
+            Errortext.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             Errortext.AutoSize = true;
-            Errortext.Location = new Point(35, 408);
+            Errortext.Location = new Point(12, 98);
             Errortext.Name = "Errortext";
-            Errortext.Size = new Size(0, 15);
+            Errortext.Size = new Size(55, 15);
             Errortext.TabIndex = 3;
-            // 
-            // ccbCountry
-            // 
-            ccbCountry.CheckOnClick = true;
-            ccbCountry.DrawMode = DrawMode.OwnerDrawVariable;
-            ccbCountry.DropDownHeight = 1;
-            ccbCountry.FormattingEnabled = true;
-            ccbCountry.IntegralHeight = false;
-            ccbCountry.Location = new Point(104, 58);
-            ccbCountry.Name = "ccbCountry";
-            ccbCountry.Size = new Size(121, 24);
-            ccbCountry.TabIndex = 4;
-            ccbCountry.ValueSeparator = ", ";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(48, 61);
-            label1.Name = "label1";
-            label1.Size = new Size(50, 15);
-            label1.TabIndex = 5;
-            label1.Text = "Country";
+            Errortext.Text = "Errortext:";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(231, 61);
+            label2.Location = new Point(12, 63);
             label2.Name = "label2";
-            label2.Size = new Size(32, 15);
+            label2.Size = new Size(35, 15);
             label2.TabIndex = 6;
-            label2.Text = "Club";
+            label2.Text = "Club:";
             // 
             // ccbClub
             // 
@@ -111,23 +80,43 @@
             ccbClub.DropDownHeight = 1;
             ccbClub.FormattingEnabled = true;
             ccbClub.IntegralHeight = false;
-            ccbClub.Location = new Point(276, 57);
+            ccbClub.Location = new Point(94, 60);
+            ccbClub.MaxDropDownItems = 20;
             ccbClub.Name = "ccbClub";
-            ccbClub.Size = new Size(121, 24);
+            ccbClub.Size = new Size(207, 24);
+            ccbClub.Sorted = true;
             ccbClub.TabIndex = 7;
             ccbClub.ValueSeparator = ", ";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 23);
+            label1.Name = "label1";
+            label1.Size = new Size(76, 15);
+            label1.TabIndex = 8;
+            label1.Text = "IOF XML File:";
+            // 
+            // SaveXMLFile
+            // 
+            SaveXMLFile.Location = new Point(317, 61);
+            SaveXMLFile.Name = "SaveXMLFile";
+            SaveXMLFile.Size = new Size(108, 23);
+            SaveXMLFile.TabIndex = 9;
+            SaveXMLFile.Text = "Save XML File";
+            SaveXMLFile.UseVisualStyleBackColor = true;
+            SaveXMLFile.Click += SaveXMLFile_Click;
             // 
             // XMLParserOL_Form
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(453, 122);
+            Controls.Add(SaveXMLFile);
+            Controls.Add(label1);
             Controls.Add(ccbClub);
             Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(ccbCountry);
             Controls.Add(Errortext);
-            Controls.Add(Parse);
             Controls.Add(XMLFile);
             Controls.Add(OpenXMLFile);
             Name = "XMLParserOL_Form";
@@ -140,11 +129,10 @@
 
         private Button OpenXMLFile;
         private TextBox XMLFile;
-        private Button Parse;
         private Label Errortext;
-        private CheckComboBox.CheckedComboBox ccbCountry;
-        private Label label1;
         private Label label2;
         private CheckComboBox.CheckedComboBox ccbClub;
+        private Label label1;
+        private Button SaveXMLFile;
     }
 }
