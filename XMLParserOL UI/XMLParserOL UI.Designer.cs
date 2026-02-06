@@ -28,37 +28,39 @@
         /// </summary>
         private void InitializeComponent()
         {
-            OpenXMLFile = new Button();
-            XMLFile = new TextBox();
+            btOpenXMLFile = new Button();
+            tbOpenXMLFile = new TextBox();
             Errortext = new Label();
             label2 = new Label();
-            ccbClub = new CheckComboBox.CheckedComboBox();
             label1 = new Label();
             SaveXMLFile = new Button();
+            SearchSI = new Button();
+            ccbClub = new CheckComboBox.CheckedComboBox();
+            tbSINumbers = new TextBox();
             SuspendLayout();
             // 
-            // OpenXMLFile
+            // btOpenXMLFile
             // 
-            OpenXMLFile.Location = new Point(317, 20);
-            OpenXMLFile.Name = "OpenXMLFile";
-            OpenXMLFile.Size = new Size(108, 23);
-            OpenXMLFile.TabIndex = 0;
-            OpenXMLFile.Text = "Open XML File";
-            OpenXMLFile.UseVisualStyleBackColor = true;
-            OpenXMLFile.Click += OpenXMLFile_Click;
+            btOpenXMLFile.Location = new Point(317, 20);
+            btOpenXMLFile.Name = "btOpenXMLFile";
+            btOpenXMLFile.Size = new Size(108, 23);
+            btOpenXMLFile.TabIndex = 0;
+            btOpenXMLFile.Text = "Open XML File";
+            btOpenXMLFile.UseVisualStyleBackColor = true;
+            btOpenXMLFile.Click += OpenXMLFile_Click;
             // 
-            // XMLFile
+            // tbOpenXMLFile
             // 
-            XMLFile.Location = new Point(94, 20);
-            XMLFile.Name = "XMLFile";
-            XMLFile.Size = new Size(207, 23);
-            XMLFile.TabIndex = 1;
+            tbOpenXMLFile.Location = new Point(94, 20);
+            tbOpenXMLFile.Name = "tbOpenXMLFile";
+            tbOpenXMLFile.Size = new Size(207, 23);
+            tbOpenXMLFile.TabIndex = 1;
             // 
             // Errortext
             // 
             Errortext.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             Errortext.AutoSize = true;
-            Errortext.Location = new Point(12, 98);
+            Errortext.Location = new Point(12, 300);
             Errortext.Name = "Errortext";
             Errortext.Size = new Size(55, 15);
             Errortext.TabIndex = 3;
@@ -69,24 +71,9 @@
             label2.AutoSize = true;
             label2.Location = new Point(12, 63);
             label2.Name = "label2";
-            label2.Size = new Size(35, 15);
+            label2.Size = new Size(40, 15);
             label2.TabIndex = 6;
-            label2.Text = "Club:";
-            // 
-            // ccbClub
-            // 
-            ccbClub.CheckOnClick = true;
-            ccbClub.DrawMode = DrawMode.OwnerDrawVariable;
-            ccbClub.DropDownHeight = 1;
-            ccbClub.FormattingEnabled = true;
-            ccbClub.IntegralHeight = false;
-            ccbClub.Location = new Point(94, 60);
-            ccbClub.MaxDropDownItems = 20;
-            ccbClub.Name = "ccbClub";
-            ccbClub.Size = new Size(207, 24);
-            ccbClub.Sorted = true;
-            ccbClub.TabIndex = 7;
-            ccbClub.ValueSeparator = ", ";
+            label2.Text = "Clubs:";
             // 
             // label1
             // 
@@ -107,18 +94,53 @@
             SaveXMLFile.UseVisualStyleBackColor = true;
             SaveXMLFile.Click += SaveXMLFile_Click;
             // 
+            // SearchSI
+            // 
+            SearchSI.Location = new Point(317, 101);
+            SearchSI.Name = "SearchSI";
+            SearchSI.Size = new Size(108, 23);
+            SearchSI.TabIndex = 10;
+            SearchSI.Text = "Search SI";
+            SearchSI.UseVisualStyleBackColor = true;
+            SearchSI.Click += SearchSI_Click;
+            // 
+            // ccbClub
+            // 
+            ccbClub.CheckOnClick = true;
+            ccbClub.DrawMode = DrawMode.OwnerDrawVariable;
+            ccbClub.DropDownHeight = 1;
+            ccbClub.FormattingEnabled = true;
+            ccbClub.IntegralHeight = false;
+            ccbClub.Location = new Point(94, 60);
+            ccbClub.Name = "ccbClub";
+            ccbClub.Size = new Size(207, 24);
+            ccbClub.TabIndex = 7;
+            ccbClub.ValueSeparator = ", ";
+            // 
+            // tbSINumbers
+            // 
+            tbSINumbers.Location = new Point(94, 102);
+            tbSINumbers.Multiline = true;
+            tbSINumbers.Name = "tbSINumbers";
+            tbSINumbers.ScrollBars = ScrollBars.Vertical;
+            tbSINumbers.Size = new Size(207, 187);
+            tbSINumbers.TabIndex = 11;
+            tbSINumbers.WordWrap = false;
+            // 
             // XMLParserOL_Form
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(453, 122);
+            ClientSize = new Size(437, 324);
+            Controls.Add(tbSINumbers);
+            Controls.Add(ccbClub);
+            Controls.Add(SearchSI);
             Controls.Add(SaveXMLFile);
             Controls.Add(label1);
-            Controls.Add(ccbClub);
             Controls.Add(label2);
             Controls.Add(Errortext);
-            Controls.Add(XMLFile);
-            Controls.Add(OpenXMLFile);
+            Controls.Add(tbOpenXMLFile);
+            Controls.Add(btOpenXMLFile);
             Name = "XMLParserOL_Form";
             Text = "XML Parser OL";
             ResumeLayout(false);
@@ -127,12 +149,14 @@
 
         #endregion
 
-        private Button OpenXMLFile;
-        private TextBox XMLFile;
+        private Button btOpenXMLFile;
+        private TextBox tbOpenXMLFile;
         private Label Errortext;
         private Label label2;
         private CheckComboBox.CheckedComboBox ccbClub;
         private Label label1;
         private Button SaveXMLFile;
+        private Button SearchSI;
+        private TextBox tbSINumbers;
     }
 }

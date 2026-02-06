@@ -49,20 +49,33 @@ namespace CheckComboBox {
                 /// Intercepts the keyboard input, [Enter] confirms a selection and [Esc] cancels it.
                 /// </summary>
                 /// <param name="e">The Key event arguments</param>
-                protected override void OnKeyDown(KeyEventArgs e) {
-                    if (e.KeyCode == Keys.Enter) {
+                protected override void OnKeyDown(KeyEventArgs e)
+                {
+                    if (e.KeyCode == Keys.Enter)
+                    {
                         // Enact selection.
-                        ((CheckedComboBox.Dropdown) Parent).OnDeactivate(new CCBoxEventArgs(null, true));
+                        if (Parent is CheckedComboBox.Dropdown dropdownParent)
+                        {
+                            dropdownParent.OnDeactivate(new CCBoxEventArgs(EventArgs.Empty, true));
+                        }
                         e.Handled = true;
 
-                    } else if (e.KeyCode == Keys.Escape) {
+                    }
+                    else if (e.KeyCode == Keys.Escape)
+                    {
                         // Cancel selection.
-                        ((CheckedComboBox.Dropdown) Parent).OnDeactivate(new CCBoxEventArgs(null, false));
+                        if (Parent is CheckedComboBox.Dropdown dropdownParent)
+                        {
+                            dropdownParent.OnDeactivate(new CCBoxEventArgs(EventArgs.Empty, false));
+                        }
                         e.Handled = true;
 
-                    } else if (e.KeyCode == Keys.Delete) {
+                    }
+                    else if (e.KeyCode == Keys.Delete)
+                    {
                         // Delete unckecks all, [Shift + Delete] checks all.
-                        for (int i = 0; i < Items.Count; i++) {
+                        for (int i = 0; i < Items.Count; i++)
+                        {
                             SetItemChecked(i, e.Shift);
                         }
                         e.Handled = true;
@@ -104,14 +117,14 @@ namespace CheckComboBox {
             }
 
             // Array holding the checked states of the items. This will be used to reverse any changes if user cancels selection.
-            bool[] checkedStateArr;
+            bool[]? checkedStateArr;
 
             // Whether the dropdown is closed.
             private bool dropdownClosed = true;
 
-            private CustomCheckedListBox cclb;
+            private CustomCheckedListBox? cclb;
             public CustomCheckedListBox List {
-                get { return cclb; }
+                get { return cclb!; }
                 set { cclb = value; }
             }
 
@@ -122,7 +135,10 @@ namespace CheckComboBox {
                 InitializeComponent();
                 this.ShowInTaskbar = false;
                 // Add a handler to notify our parent of ItemCheck events.
-                this.cclb.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cclb_ItemCheck);
+                if (this.cclb != null)
+                {
+                    this.cclb.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cclb_ItemCheck);
+                }
             }
 
             // ********************************************* Methods *********************************************
@@ -160,11 +176,16 @@ namespace CheckComboBox {
 
             public string GetCheckedItemsStringValue() {
                 StringBuilder sb = new StringBuilder("");
-                for (int i = 0; i < cclb.CheckedItems.Count; i++) {                    
-                    sb.Append(cclb.GetItemText(cclb.CheckedItems[i])).Append(ccbParent.ValueSeparator);
-                }
-                if (sb.Length > 0) {
-                    sb.Remove(sb.Length - ccbParent.ValueSeparator.Length, ccbParent.ValueSeparator.Length);
+                if (cclb != null)
+                {
+                    for (int i = 0; i < cclb.CheckedItems.Count; i++)
+                    {
+                        sb.Append(cclb.GetItemText(cclb.CheckedItems[i])).Append(ccbParent.ValueSeparator);
+                    }
+                    if (sb.Length > 0)
+                    {
+                        sb.Remove(sb.Length - ccbParent.ValueSeparator.Length, ccbParent.ValueSeparator.Length);
+                    }
                 }
                 return sb.ToString();
             }
@@ -189,8 +210,12 @@ namespace CheckComboBox {
 
                 } else {
                     // Caller cancelled selection - need to restore the checked items to their original state.
-                    for (int i = 0; i < cclb.Items.Count; i++) {
-                        cclb.SetItemChecked(i, checkedStateArr[i]);
+                    if (cclb != null && checkedStateArr != null)
+                    {
+                        for (int i = 0; i < cclb.Items.Count; i++)
+                        {
+                            cclb.SetItemChecked(i, checkedStateArr[i]);
+                        }
                     }
                 }
                 // From now on the dropdown is considered closed. We set the flag here to prevent OnDeactivate() calling
@@ -202,7 +227,7 @@ namespace CheckComboBox {
                 // Notify CheckedComboBox that its dropdown is closed. (NOTE: it does not matter which parameters we pass to
                 // OnDropDownClosed() as long as the argument is CCBoxEventArgs so that the method knows the notification has
                 // come from our code and not from the framework).
-                ccbParent.OnDropDownClosed(new CCBoxEventArgs(null, false));
+                ccbParent.OnDropDownClosed(new CCBoxEventArgs(EventArgs.Empty, false));
             }
 
             protected override void OnActivated(EventArgs e) {
@@ -212,16 +237,20 @@ namespace CheckComboBox {
                 // Assign the old string value to compare with the new value for any changes.
                 oldStrValue = ccbParent.Text;
                 // Make a copy of the checked state of each item, in cace caller cancels selection.
-                checkedStateArr = new bool[cclb.Items.Count];
-                for (int i = 0; i < cclb.Items.Count; i++) {
-                    checkedStateArr[i] = cclb.GetItemChecked(i);
+                if (cclb != null)
+                {
+                    checkedStateArr = new bool[cclb.Items.Count];
+                    for (int i = 0; i < cclb.Items.Count; i++)
+                    {
+                        checkedStateArr[i] = cclb.GetItemChecked(i);
+                    }
                 }
             }
 
             protected override void OnDeactivate(EventArgs e) {
                 Debug.WriteLine("OnDeactivate");
                 base.OnDeactivate(e);
-                CCBoxEventArgs ce = e as CCBoxEventArgs;
+                CCBoxEventArgs? ce = e as CCBoxEventArgs;
                 if (ce != null) {
                     CloseDropdown(ce.AssignValues);
 
@@ -232,7 +261,7 @@ namespace CheckComboBox {
                 }
             }
 
-            private void cclb_ItemCheck(object sender, ItemCheckEventArgs e) {
+            private void cclb_ItemCheck(object? sender, ItemCheckEventArgs e) {
                 if (ccbParent.ItemCheck != null) {
                     ccbParent.ItemCheck(sender, e);
                 }
@@ -244,7 +273,7 @@ namespace CheckComboBox {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private System.ComponentModel.IContainer? components = null;
         // A form-derived object representing the drop-down list of the checked combo box.
         private Dropdown dropdown;
 
@@ -283,7 +312,7 @@ namespace CheckComboBox {
         }
 
         // Event handler for when an item check state changes.
-        public event ItemCheckEventHandler ItemCheck;
+        public event ItemCheckEventHandler? ItemCheck;
         
         // ******************************** Construction ********************************
 
@@ -354,7 +383,7 @@ namespace CheckComboBox {
                 // when it is a result of user pressing the Down_Arrow (which we handle and the framework wouldn't know that
                 // the list portion is down unless we tell it so).
                 // NOTE: all that so the DropDownClosed event fires correctly!                
-                OnDropDown(null);
+                OnDropDown(EventArgs.Empty);
             }
             // Make sure that certain keys or combinations are not blocked.
             e.Handled = !e.Alt && !(e.KeyCode == Keys.Tab) &&

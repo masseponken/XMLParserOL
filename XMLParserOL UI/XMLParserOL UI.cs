@@ -1,9 +1,10 @@
+using CheckComboBox;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using CheckComboBox;
-using System.Diagnostics.Metrics;
-using System.Diagnostics;
 
 namespace XMLParserOL_UI
 {
@@ -11,8 +12,11 @@ namespace XMLParserOL_UI
     public partial class XMLParserOL_Form : Form
     {
         XmlDocument xmlDoc = new XmlDocument();
-        XmlNodeList competitors;
+        XmlNodeList? competitors;
         Stopwatch timer = new Stopwatch();
+        private XDocument? loadedDoc;
+        private XNamespace ns = "http://www.orienteering.org/datastandard/3.0";
+
 
         public XMLParserOL_Form()
         {
@@ -34,56 +38,33 @@ namespace XMLParserOL_UI
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         //Get the path of specified file
-                        XMLFile.Text = openFileDialog.FileName;
-                        XMLFile.SelectionStart = XMLFile.Text.Length;
+                        tbOpenXMLFile.Text = openFileDialog.FileName;
+                        tbOpenXMLFile.SelectionStart = tbOpenXMLFile.Text.Length;
+
 
                         timer.Reset();
                         timer.Start();
 
-                        Errortext.Text = "";
-                        xmlDoc.Load(XMLFile.Text);
-                        List<String> coutries = new List<String>();
-                        List<String> clubs = new List<String>();
+                        loadedDoc = XDocument.Load(tbOpenXMLFile.Text);
 
-                        Cursor.Current = Cursors.WaitCursor;
-                        competitors = xmlDoc.GetElementsByTagName("Competitor");
-                        foreach (XmlNode competitor in competitors)
-                        {
-                            foreach (XmlNode competitorChildnodes in competitor.ChildNodes)
-                            {
-                                if (competitorChildnodes.Name == "Organisation")
-                                {
-                                    foreach (XmlNode childnode in competitorChildnodes.ChildNodes)
-                                    {
-                                        if (childnode.Name == "Id")
-                                        {
+                        var clubs = loadedDoc.Root?
+                            .Elements(ns + "Competitor")
+                            .Elements(ns + "Organisation")
+                            .Elements(ns + "Name")
+                            .Select(name => name.Value.Trim())
+                            .Distinct()
+                            .OrderBy(name => name)
+                            .ToList();
 
-                                            var country = childnode.Attributes["type"];
-                                            if (!coutries.Contains(country.Value))
-                                            {
-                                                coutries.Add(country.Value);
-                                            }
-                                        }
-                                        if (childnode.Name == "Name")
-                                        {
-                                            var club = childnode.InnerText;
-                                            if (!clubs.Contains(club))
-                                            {
-                                                clubs.Add(club);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        //clubs = clubs.OrderBy(c => c).ToList();
-                        ccbClub.Items.AddRange(clubs.OrderBy(c => c).ToArray());
+                        ccbClub.Items.Clear();
+                        ccbClub.Items.AddRange(clubs?.ToArray() ?? Array.Empty<string>());
+
                         timer.Stop();
-                        Errortext.Text = "Found and read " + ccbClub.Items.Count + " clubs in: " + timer.ElapsedMilliseconds.ToString() + " ms.";
-
+                        Errortext.Text = $"Found and read {ccbClub.Items.Count} clubs in: {timer.ElapsedMilliseconds} ms.";
                     }
                 }
             }
+
             catch (FileNotFoundException ex)
             {
                 Errortext.Text = "FileNotFoundException: " + ex.Message;
@@ -108,7 +89,78 @@ namespace XMLParserOL_UI
         {
             try
             {
-                List<XmlNode> filteredList = new List<XmlNode>();
+                if (loadedDoc?.Root != null)
+                {
+                    var selectedClubs = ccbClub.CheckedItems.Cast<string>().ToHashSet();
+
+                    Errortext.Text = "";
+                    using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                    {
+                        saveFileDialog.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*";
+
+                        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            timer.Reset();
+                            timer.Start();
+                            Cursor.Current = Cursors.WaitCursor;
+                            //Get the path of specified file
+
+
+                            var filteredCompetitors = loadedDoc.Root
+                                            .Elements(ns + "Competitor")
+                                            .Where(comp =>
+                                                comp.Elements(ns + "Organisation")
+                                                    .Elements(ns + "Name")
+                                                    .Any(name => selectedClubs.Contains(name.Value.Trim()))
+                                            )
+                                            .ToList();
+
+                            var newRoot = new XElement(ns + "CompetitorList",
+                                loadedDoc.Root.Attributes(),
+                                filteredCompetitors
+                            );
+
+                            var newDoc = new XDocument(new XDeclaration("1.0", "UTF-8", null), newRoot);
+                            newDoc.Save(saveFileDialog.FileName);
+
+                        }
+                        else
+                        {
+                            Errortext.Text = "No XML file name to save.";
+                        }
+                    }
+                }
+                else
+                {
+                    Errortext.Text = "No XML file loaded.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Errortext.Text = "General Exeption: " + ex.Message;
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+
+        private void SearchSI_Click(object sender, EventArgs e)
+        {
+
+            if (loadedDoc?.Root != null)
+            {
+
+                var lines = tbSINumbers.Text
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+
+                var siNumbers = tbSINumbers.Text
+                        .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(line => line.Trim())
+                        .ToHashSet();
+
                 Errortext.Text = "";
                 using (SaveFileDialog saveFileDialog = new SaveFileDialog())
                 {
@@ -122,63 +174,35 @@ namespace XMLParserOL_UI
                         timer.Start();
                         Cursor.Current = Cursors.WaitCursor;
                         //Get the path of specified file
-                        XMLFile.Text = saveFileDialog.FileName;
-                        XMLFile.SelectionStart = XMLFile.Text.Length;
 
-                        int x = 0;
-                        Errortext.Text = "Found " + x + " competitors";
 
-                        foreach (XmlNode competitor in competitors)
-                        {
-                            foreach (XmlNode competitorChildnodes in competitor.ChildNodes)
-                            {
-                                if (competitorChildnodes.Name == "Organisation")
-                                {
-                                    foreach (XmlNode childnode in competitorChildnodes.ChildNodes)
-                                    {
-                                        if (childnode.Name == "Name")
-                                        {
-                                            foreach (var checkedItem in ccbClub.CheckedItems)
-                                            {
-                                                if (childnode.FirstChild.Value.ToLower() == checkedItem.ToString().ToLower())
-                                                {
-                                                    filteredList.Add(competitor);
-                                                    x++;
-                                                    Errortext.Text = ("Found " + x + " competitors from " + ccbClub.CheckedItems.Count + " club(s)");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
 
-                        XmlDocument outDoc = new XmlDocument();
-                        XmlNode header = outDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
-                        outDoc.AppendChild(header);
+                        var filteredCompetitors = loadedDoc.Root
+                                        .Elements(ns + "Competitor")
+                                        .Where(comp =>
+                                            comp.Elements(ns + "ControlCard")
+                                                .Any(card =>
+                                                    (string?)card.Attribute("punchingSystem") == "SI" &&
+                                                    siNumbers.Contains(card.Value.Trim()))
+                                        )
+                                        .ToList();
 
-                        XmlNode competitorList = outDoc.ImportNode(xmlDoc.LastChild, false);
+                        var newRoot = new XElement(ns + "CompetitorList",
+                            loadedDoc.Root.Attributes(),
+                            filteredCompetitors
+                        );
 
-                        foreach (XmlNode competitor in filteredList)
-                        {
-                            competitorList.AppendChild(outDoc.ImportNode(competitor, true));
-                        }
+                        var newDoc = new XDocument(new XDeclaration("1.0", "UTF-8", null), newRoot);
+                        newDoc.Save(saveFileDialog.FileName);
 
-                        outDoc.AppendChild(competitorList);
-
-                        outDoc.Save(XMLFile.Text);
                         timer.Stop();
-                        Errortext.Text = "Saved " + filteredList.Count + " competitors from " + ccbClub.CheckedItems.Count + " clubs in: " + timer.ElapsedMilliseconds.ToString() + " ms.";
+                        Errortext.Text = $"Saved {filteredCompetitors.Count} competitors with matching SI numbers in: {timer.ElapsedMilliseconds} ms.";
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Errortext.Text = "General Exeption: " + ex.Message;
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
+                Errortext.Text = "No XML file loaded.";
             }
         }
     }

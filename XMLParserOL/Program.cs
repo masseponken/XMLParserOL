@@ -22,7 +22,12 @@ namespace XMLParserOL
                 try
                 {
                     Console.Write("Location of XML-file: ");
-                    string location = Console.ReadLine();
+                    string? location = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(location))
+                    {
+                        Console.WriteLine("Input cannot be empty. Please enter a valid file path.");
+                        continue;
+                    }
 
                     timer.Reset();
                     timer.Start();
@@ -48,7 +53,7 @@ namespace XMLParserOL
             Console.WriteLine("Found and read " + competitors.Count + " in: " + timer.ElapsedMilliseconds.ToString() + " ms.");
 
             Console.Write("Filter by club: ");
-            string club = Console.ReadLine();
+            string? club = Console.ReadLine();
 
             List<XmlNode> filteredList = new List<XmlNode>();
 
@@ -68,7 +73,9 @@ namespace XMLParserOL
                         {
                             if (childnode.Name == "Name")
                             {
-                                if(childnode.FirstChild.Value.ToLower() == club.ToLower())
+                                if (childnode.FirstChild != null && 
+                                    childnode.FirstChild.Value != null && 
+                                    childnode.FirstChild.Value.Equals(club, StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     filteredList.Add(competitor);
                                     Console.SetCursorPosition(0, Console.CursorTop - 1);
@@ -85,18 +92,33 @@ namespace XMLParserOL
             XmlNode header = outDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
             outDoc.AppendChild(header);
 
-            XmlNode competitorList = outDoc.ImportNode(doc.LastChild, false);
-
-            foreach(XmlNode competitor in filteredList)
+            // Ensure doc.LastChild is not null before using ImportNode
+            if (doc.LastChild != null)
             {
-                competitorList.AppendChild(outDoc.ImportNode(competitor, true));
+                XmlNode competitorList = outDoc.ImportNode(doc.LastChild, false);
+
+                foreach(XmlNode competitor in filteredList)
+                {
+                    competitorList.AppendChild(outDoc.ImportNode(competitor, true));
+                }
+
+                outDoc.AppendChild(competitorList);
+            }
+            else
+            {
+                Console.WriteLine("Error: The source XML document does not have a root element.");
             }
 
-            outDoc.AppendChild(competitorList);
-
             Console.Write("Input path of output file: ");
-            string output = Console.ReadLine();
-            outDoc.Save(output);
+            string? output = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(output))
+            {
+                outDoc.Save(output);
+            }
+            else
+            { 
+                Console.WriteLine("Output path cannot be empty. Please enter a valid file path.");
+            }
         }
     }
 }

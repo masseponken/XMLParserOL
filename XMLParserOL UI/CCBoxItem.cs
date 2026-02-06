@@ -10,7 +10,7 @@ namespace CheckComboBox {
             set { val = value; }
         }
         
-        private string name;
+        private string name = string.Empty;
         public string Name {
             get { return name; }
             set { name = value; }
